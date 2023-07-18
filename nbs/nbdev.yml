@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "nanograd"
+  site-url: "https://vempaliakhil96.github.io/nanograd"
+  description: "This is a mock library implementing `micrograd` by Andrej Karpathy"
+  repo-branch: main
+  repo-url: "https://github.com/vempaliakhil96/nanograd"

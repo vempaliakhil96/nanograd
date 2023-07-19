@@ -3,13 +3,23 @@
 # %% auto 0
 __all__ = ['Value']
 
-# %% ../nbs/01_value.ipynb 1
+# %% ../nbs/01_value.ipynb 2
+from fastcore.test import *
+
+# %% ../nbs/01_value.ipynb 3
 class Value:
-    def __init__(self, data):
+
+    def __init__(self, data, _children=(), _op=""):
         self.data = data
+        self._prev = set(_children)
+        self._op = _op
 
     def __repr__(self):
         return f"Value(data={self.data})"
 
     def __add__(self, other):
-        return Value(self.data + other.data)
+        out = Value(self.data + other.data, (self, other), "+") 
+        return out
+    
+    def __mul__(self, other):
+        return Value(self.data * other.data, (self, other), "*")

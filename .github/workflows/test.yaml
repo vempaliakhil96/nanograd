@@ -4,4 +4,8 @@ on:  [workflow_dispatch, pull_request, push]
 jobs:
   test:
     runs-on: ubuntu-latest
-    steps: [uses: fastai/workflows/nbdev-ci@master]
+    steps: 
+    - uses: actions/checkout@v3
+    - name: Setup Graphviz
+      uses: ts-graphviz/setup-graphviz@v1
+    - uses: fastai/workflows/nbdev-ci@master

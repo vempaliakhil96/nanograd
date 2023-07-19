@@ -5,4 +5,7 @@ d = { 'settings': { 'branch': 'main',
                 'doc_host': 'https://vempaliakhil96.github.io',
                 'git_url': 'https://github.com/vempaliakhil96/nanograd',
                 'lib_path': 'nanograd'},
-  'syms': {'nanograd.core': {'nanograd.core.foo': ('core.html#foo', 'nanograd/core.py')}}}
+  'syms': { 'nanograd.core': { 'nanograd.core.Value': ('value.html#value', 'nanograd/core.py'),
+                               'nanograd.core.Value.__add__': ('value.html#value.__add__', 'nanograd/core.py'),
+                               'nanograd.core.Value.__init__': ('value.html#value.__init__', 'nanograd/core.py'),
+                               'nanograd.core.Value.__repr__': ('value.html#value.__repr__', 'nanograd/core.py')}}}

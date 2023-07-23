@@ -4,7 +4,7 @@
 __all__ = ['Neuron', 'Layer', 'MLP']
 
 # %% ../nbs/03_neuron.ipynb 2
-from .core.value import Value
+from .core import Value
 import random
 from typing import List
 

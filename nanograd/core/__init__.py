@@ -3,9 +3,9 @@
 # %% auto 0
 __all__ = []
 
-# %% ../../nbs/04_core.ipynb 1
+# %% ../../nbs/04_core.ipynb 2
 from .value import Value, draw_dot
 from .neuron import Neuron
 
-# %% ../../nbs/04_core.ipynb 2
+# %% ../../nbs/04_core.ipynb 3
 __all__ = ['Value', 'Neuron', 'draw_dot']

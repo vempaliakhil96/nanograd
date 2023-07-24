@@ -56,6 +56,12 @@ class Value:
 
     def __radd__(self, other):
         return self + other
+    
+    def __sub__(self, other):
+        return self + (other * -1)
+    
+    def __rsub__(self, other):
+        return other + (self * -1)
 
     def __mul__(
         self,
@@ -81,7 +87,8 @@ class Value:
         This is an activation function which when applied returns a new `Value` object. with the tanh aspplied on the data.
         """
         n = self.data
-        val = (math.exp(2 * n) - 1) / (math.exp(2 * n) + 1)
+        
+        val = (math.exp(2 * n) - 1) / (math.exp(2 * n) + 1) if -20<n<20 else 1 if n>0 else -1
         out = Value(val, (self,), "tanh")
 
         def _backward():

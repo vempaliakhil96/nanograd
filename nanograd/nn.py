@@ -145,10 +145,13 @@ class MLP(Module):
 
 # %% ../nbs/03_neuron.ipynb 8
 def plot_preds(
-    xs,
-    ys,
-    y_preds,
+    xs: List[float], # single input input variable
+    ys: List[float], # actual output 
+    y_preds: List[float], # predicted output
 ):
+    """
+    Plot the actual and predicted output.
+    """
     import matplotlib.pyplot as plt
 
     plt.plot(xs, ys, color="blue")

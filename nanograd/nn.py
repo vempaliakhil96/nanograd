@@ -51,7 +51,7 @@ class Layer:
         self,
         inputs: Union[List[int], Any] = None,
         dot: Digraph = None,
-        return_dot_only: bool = False,
+        return_dot_only: bool = True,
     ):
         dot = Digraph(format="svg", graph_attr={"rankdir": "LR"}) if dot is None else dot
         if inputs is None:

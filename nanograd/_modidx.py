@@ -35,4 +35,5 @@ d = { 'settings': { 'branch': 'main',
                              'nanograd.nn.Neuron': ('neuron.html#neuron', 'nanograd/nn.py'),
                              'nanograd.nn.Neuron.__call__': ('neuron.html#neuron.__call__', 'nanograd/nn.py'),
                              'nanograd.nn.Neuron.__init__': ('neuron.html#neuron.__init__', 'nanograd/nn.py'),
-                             'nanograd.nn.Neuron.parameters': ('neuron.html#neuron.parameters', 'nanograd/nn.py')}}}
+                             'nanograd.nn.Neuron.parameters': ('neuron.html#neuron.parameters', 'nanograd/nn.py'),
+                             'nanograd.nn.plot_preds': ('neuron.html#plot_preds', 'nanograd/nn.py')}}}

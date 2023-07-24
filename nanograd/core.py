@@ -33,7 +33,7 @@ class Value:
         self.label = label
 
     def __repr__(self):
-        return f"Value(data={self.data}, grad={self.grad}, label={self.label})"
+        return f"Value(data={self.data:.2e}, grad={self.grad:.2e}, label={self.label})"
 
     def __add__(
         self,
@@ -78,7 +78,7 @@ class Value:
 
     def tanh(self):
         """
-        This is an activaation function which when applied returns a new `Value` object. with the tanh aspplied on the data.
+        This is an activation function which when applied returns a new `Value` object. with the tanh aspplied on the data.
         """
         n = self.data
         val = (math.exp(2 * n) - 1) / (math.exp(2 * n) + 1)

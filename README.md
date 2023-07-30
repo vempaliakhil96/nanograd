@@ -10,57 +10,59 @@
 ## How to use
 
 ``` python
-from nanograd.nn import MLP
+from nanograd.nn import MLP, plot_preds
 import numpy as np
+import math
 ```
 
 ## Let’s generate a random dataset
 
+Generating few samples of a sine wave
+
 ``` python
-def generate_dataset(num_samples):
-    X = np.random.rand(num_samples, 2)  # Two input features (random values between 0 and 1)
-    Y = np.zeros(num_samples, dtype=int)  # Output labels initialized as zeros
+samples = [(i, 1 if math.sin(i)>0 else -1) for i in np.arange(-5, 5, 0.1)]
 
-    # Generate labels based on the region defined by X1 and X2
-    for i in range(num_samples):
-        if X[i, 0] + X[i, 1] > 1:
-            Y[i] = 1  # Class 1
-        else:
-            Y[i] = 0  # Class 0
-
-    return X, Y
-
-X, Y = generate_dataset(100)
+xs, ys = zip(*samples)
+xs, ys = list(xs), list(ys)
 ```
 
 ## Initialise MLP
 
 ``` python
-model = MLP(2, [4,3,1])
+model = MLP(1, [4, 4, 1])
 model.draw_nn()
 ```
 
 ![](index_files/figure-commonmark/cell-4-output-1.svg)
 
+### Perdictions before training
+
+``` python
+y_preds = [model([x])[0] for x in xs]
+plot_preds(xs, ys, [i.data for i in y_preds])
+```
+
+![](index_files/figure-commonmark/cell-5-output-1.png)
+
 ## Training loop
 
 ``` python
 def calc_loss_and_accuracy(model, X, Y):
-    y_preds = [model(x)[0] for x in X]
+    y_preds = [model([x])[0] for x in X]
     loss = sum([(y_preds[i] - Y[i])**2 for i in range(len(Y))])/len(Y) # MSE
     y_preds = [1 if y_preds[i].data > 0.5 else 0 for i in range(len(Y))]
     accuracy = sum([1 if y_preds[i] == Y[i] else 0 for i in range(len(Y))])/len(Y)
     return loss, accuracy
-calc_loss_and_accuracy(model, X, Y)
+calc_loss_and_accuracy(model, xs, ys)
 ```
 
-    (Value(data=1.03e+00, grad=0.00e+00, label=), 0.46)
+    (Value(data=1.23e+00, grad=0.00e+00, label=), 0.0)
 
 ``` python
 for i in range(1000):
     
     # forward pass
-    loss, accuracy = calc_loss_and_accuracy(model, X, Y)
+    loss, accuracy = calc_loss_and_accuracy(model, xs, ys)
     
     
     # backward pass
@@ -75,13 +77,30 @@ for i in range(1000):
         print(f"Loss at epoch {i:.3f}: {loss.data:.3f} | Accuracy: {accuracy:.3f}")
 ```
 
-    Loss at epoch 0.000: 1.034 | Accuracy: 0.460
-    Loss at epoch 100.000: 0.233 | Accuracy: 0.680
-    Loss at epoch 200.000: 0.153 | Accuracy: 0.810
-    Loss at epoch 300.000: 0.098 | Accuracy: 0.890
-    Loss at epoch 400.000: 0.075 | Accuracy: 0.970
-    Loss at epoch 500.000: 0.066 | Accuracy: 0.970
-    Loss at epoch 600.000: 0.059 | Accuracy: 0.980
-    Loss at epoch 700.000: 0.054 | Accuracy: 0.980
-    Loss at epoch 800.000: 0.049 | Accuracy: 0.980
-    Loss at epoch 900.000: 0.045 | Accuracy: 0.980
+    Loss at epoch 0.000: 1.231 | Accuracy: 0.000
+    Loss at epoch 100.000: 0.554 | Accuracy: 0.220
+    Loss at epoch 200.000: 0.260 | Accuracy: 0.370
+    Loss at epoch 300.000: 0.147 | Accuracy: 0.420
+    Loss at epoch 400.000: 0.117 | Accuracy: 0.440
+    Loss at epoch 500.000: 0.099 | Accuracy: 0.450
+    Loss at epoch 600.000: 0.087 | Accuracy: 0.450
+    Loss at epoch 700.000: 0.079 | Accuracy: 0.470
+    Loss at epoch 800.000: 0.072 | Accuracy: 0.470
+    Loss at epoch 900.000: 0.067 | Accuracy: 0.470
+
+## Predictions
+
+``` python
+y_preds = [model([x])[0] for x in xs]
+plot_preds(xs, ys, [i.data for i in y_preds])
+```
+
+![](index_files/figure-commonmark/cell-8-output-1.png)
+
+Notice the strength of the connections has changed.
+
+``` python
+model.draw_nn()
+```
+
+![](index_files/figure-commonmark/cell-9-output-1.svg)

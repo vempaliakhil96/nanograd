@@ -1,0 +1,114 @@
+[
+  {
+    "objectID": "backprop.html",
+    "href": "backprop.html",
+    "title": "Let us Backprop!",
+    "section": "",
+    "text": "from nanograd.core import Value"
+  },
+  {
+    "objectID": "backprop.html#initial-variables",
+    "href": "backprop.html#initial-variables",
+    "title": "Let us Backprop!",
+    "section": "Initial variables",
+    "text": "Initial variables\nLet’s start by defining some initital varaibles, here we have defined complex function L which depends on a, b, c, f with e, d being intermediate variables\n\na = Value(2.0, label=\"a\")\nb = Value(-3.0, label=\"b\")\nc = Value(10.0, label=\"c\")\ne = a*b; e.label = \"e\"\nd = e + c; d.label = \"d\"\nf = Value(-2.0, label=\"f\")\nL = d * f; L.label = \"L\"\nL.draw_dot()"
+  },
+  {
+    "objectID": "backprop.html#backward",
+    "href": "backprop.html#backward",
+    "title": "Let us Backprop!",
+    "section": ".backward()",
+    "text": ".backward()\nL stores the entire function as a directed graph and the ops with which it is linked to the input variables i.e a,b,c,f. Calling .backward() on L will calculate gradients with respect to L for evey intermediate variable and also the input.Gradients flow to parent nodes using chain rule, the + sign flows the gradients as is to tis parent nodes, where as the * sign flows the gradients to its consitutents by multiplying the weights associated with the “other” parent.  ### Let’s consider 2 examples from the above graph\n\nExample #1\nd = e + c and L = d * f, now how does L change with respect to d? It is \\(\\frac{dL}{dd}\\) which is f, which is -2. So the gradient at of Value d is -2. Or Increasing d by 1 unit will decrease L by 2 units. But if we were to look at the effect of e with respect to L, i.e \\(\\frac{dL}{de}\\), it has to involve the sensitivity caused by d since L is connected to e through d. Mathematically, \\(\\frac{dL}{de} = \\frac{dL}{dd} * \\frac{dd}{de}\\), since \\(\\frac{dd}{de} = 1\\), \\(\\frac{dL}{de} = -2\\)\n\n\nExample #2\ne = b * c and \\(\\frac{dL}{de} = -2\\) as calculated in above example. How sensitive would L be with respect to b depends on how sensitive L is to d, which in turn depends on how sensitive d is to e. So when we compute the sensitivity of L with respect to b, we need to first know how sensitive L is to d, after whichwe need to know how sensitive L is to e throuh which we will know how sensitive L is to b. Using the mntioned chain rule above, \\(\\frac{dL}{db} = \\frac{dL}{de} * \\frac{de}{db}\\), \\(\\frac{dL}{de} = -2\\) and since e = b*c, \\(\\frac{de}{db} = c\\) therefore \\(\\frac{dL}{db} = -2 * 2; \\frac{dL}{db} = 4\\)\nThe implementation of .backward() is a recursive function which calculates the gradients a each node in a topologically sorted directed graph and flows these gradients back to it’s parent nodes using chain rule\n\nL.backward()\nL.draw_dot()"
+  },
+  {
+    "objectID": "derivative.html",
+    "href": "derivative.html",
+    "title": "What are derivatives?",
+    "section": "",
+    "text": "import math\nimport numpy as np\nimport matplotlib.pyplot as plt\nLet’s create a random function\ndef f(x):\n    return 3 * x**2 - 4 * x + 5\nxs = np.arange(-5, 5, 0.25)\nys = f(xs)\nplt.plot(xs, ys)"
+  },
+  {
+    "objectID": "derivative.html#the-formula-for-derivative-is.",
+    "href": "derivative.html#the-formula-for-derivative-is.",
+    "title": "What are derivatives?",
+    "section": "The formula for derivative is….",
+    "text": "The formula for derivative is….\n\\[\\frac{df(x)}{dx} = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h}\\]\nNudging the function slightly and checking what it’s effect would be on the function\n\nh = 0.0001  # beware! don't make it too small! (why?)\nx = 3.0\nf(x), f(x + h)\n\n(20.0, 20.001400030000006)\n\n\nWe can quantify this nudge by taking their difference and dividing it by the nudge step (or “normalising” it by the step size 😉)\n\ndfdx = (f(x + h) - f(x)) / h\ndfdx\n\n14.000300000063248"
+  },
+  {
+    "objectID": "derivative.html#for-a-multi-variate-funtion-we-can-nudge-it-with-respect-to-any-1-variable",
+    "href": "derivative.html#for-a-multi-variate-funtion-we-can-nudge-it-with-respect-to-any-1-variable",
+    "title": "What are derivatives?",
+    "section": "For a multi-variate funtion, we can nudge it with respect to any 1 variable",
+    "text": "For a multi-variate funtion, we can nudge it with respect to any 1 variable\n\nThis wil help us look at the behaviour of the function when we change the value of any 1 variable slightly\n\nSay \\[f(x, y, z) = x^2 + y^2 + z^3\\]\nThis can be differentiated wrt x, y or z\nSo we can look at \\[\\frac{df(x, y, z)}{dx} \\ or\\ \\frac{df(x, y, z)}{dy} \\ or\\ \\frac{df(x, y, z)}{dz}\\]"
+  },
+  {
+    "objectID": "derivative.html#lets-say",
+    "href": "derivative.html#lets-say",
+    "title": "What are derivatives?",
+    "section": "Let’s say",
+    "text": "Let’s say\n\nh = 0.0001\n\n# inputs\na = 2.0\nb = -3.0\nc = 10\nd = a * b + c\nprint(d)\n\n4.0\n\n\n\nWe want to inspect what will happen to d if we change a slightly\n\nd1 = a * b + c\na += h\nd2 = a * b + c\nprint(\"d1:\", d1)\nprint(\"d2:\", d2)\nprint(\"slope:\", (d2 - d1) / h)\n\nd1: 4.0\nd2: 3.999699999999999\nslope: -3.000000000010772\n\n\n\n\nLets try with b now\n\nd1 = a * b + c\nb += h\nd2 = a * b + c\nprint(\"d1:\", d1)\nprint(\"d2:\", d2)\nprint(\"slope:\", (d2 - d1) / h)\n\nd1: 3.999699999999999\nd2: 3.99990001\nslope: 2.0001000000124947\n\n\nNote: Slightly increasing a decreases the value of d but slightly increasing b actually increases the value of d. Here the “slope” or “gradient” or “derivative” tells us what is the magnitude of the change"
+  },
+  {
+    "objectID": "value.html",
+    "href": "value.html",
+    "title": "Value",
+    "section": "",
+    "text": "source\n\nValue\n\n Value (data:float, _children:Tuple[ForwardRef('Value'),...]=(),\n        _op:str='', label:str='')\n\nThis is the fundamental building block of our neural nets. This is a class that stores any scalar value and provides various mathamatical operations on it. It also stores the gradient of the value with respect to some scalar value. This is used to compute the gradients of the loss function with respect to the parameters of the neural net.\n\n\n\n\n\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\ndata\nfloat\n\nThis stores the value of the node\n\n\n_children\ntyping.Tuple[ForwardRef(‘Value’), …]\n()\n\n\n\n_op\nstr\n\nThs store the value of te operationthat was used to compute the current node.\n\n\nlabel\nstr\n\nEach value can have an associated label that can be used to identify it during calling draw_dot\n\n\n\n\nassert (Value(1) + Value(2)).data == (Value(3)).data\nassert (Value(1) * Value(2)).data == (Value(2)).data\nassert (Value(1) + Value(2) * Value(3)).data == (Value(7)).data\n\n\n(Value(1, label='a') + Value(2, label='b') * Value(3, label='c')).draw_dot()"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "nanograd",
+    "section": "",
+    "text": "git clone https://github.com/vempaliakhil96/nanograd.git && cd nanaograd\npip install ."
+  },
+  {
+    "objectID": "index.html#install",
+    "href": "index.html#install",
+    "title": "nanograd",
+    "section": "",
+    "text": "git clone https://github.com/vempaliakhil96/nanograd.git && cd nanaograd\npip install ."
+  },
+  {
+    "objectID": "index.html#how-to-use",
+    "href": "index.html#how-to-use",
+    "title": "nanograd",
+    "section": "How to use",
+    "text": "How to use\n\nfrom nanograd.nn import MLP, plot_preds\nimport numpy as np\nimport math"
+  },
+  {
+    "objectID": "index.html#lets-generate-a-random-dataset",
+    "href": "index.html#lets-generate-a-random-dataset",
+    "title": "nanograd",
+    "section": "Let’s generate a random dataset",
+    "text": "Let’s generate a random dataset\nGenerating few samples of a sine wave\n\nsamples = [(i, 1 if math.sin(i)&gt;0 else -1) for i in np.arange(-5, 5, 0.1)]\n\nxs, ys = zip(*samples)\nxs, ys = list(xs), list(ys)"
+  },
+  {
+    "objectID": "index.html#initialise-mlp",
+    "href": "index.html#initialise-mlp",
+    "title": "nanograd",
+    "section": "Initialise MLP",
+    "text": "Initialise MLP\n\nmodel = MLP(1, [4, 4, 1])\nmodel.draw_nn()\n\n\n\n\n\nPerdictions before training\n\ny_preds = [model([x])[0] for x in xs]\nplot_preds(xs, ys, [i.data for i in y_preds])"
+  },
+  {
+    "objectID": "index.html#training-loop",
+    "href": "index.html#training-loop",
+    "title": "nanograd",
+    "section": "Training loop",
+    "text": "Training loop\n\ndef calc_loss_and_accuracy(model, X, Y):\n    y_preds = [model([x])[0] for x in X]\n    loss = sum([(y_preds[i] - Y[i])**2 for i in range(len(Y))])/len(Y) # MSE\n    y_preds = [1 if y_preds[i].data &gt; 0.5 else 0 for i in range(len(Y))]\n    accuracy = sum([1 if y_preds[i] == Y[i] else 0 for i in range(len(Y))])/len(Y)\n    return loss, accuracy\ncalc_loss_and_accuracy(model, xs, ys)\n\n(Value(data=1.23e+00, grad=0.00e+00, label=), 0.0)\n\n\n\nfor i in range(1000):\n    \n    # forward pass\n    loss, accuracy = calc_loss_and_accuracy(model, xs, ys)\n    \n    \n    # backward pass\n    model.zero_grad()\n    loss.backward()\n\n    # update weights\n    for p in model.parameters():\n        p.data += -0.1 * p.grad\n    \n    if i % 100 == 0:\n        print(f\"Loss at epoch {i:.3f}: {loss.data:.3f} | Accuracy: {accuracy:.3f}\")\n\nLoss at epoch 0.000: 1.231 | Accuracy: 0.000\nLoss at epoch 100.000: 0.554 | Accuracy: 0.220\nLoss at epoch 200.000: 0.260 | Accuracy: 0.370\nLoss at epoch 300.000: 0.147 | Accuracy: 0.420\nLoss at epoch 400.000: 0.117 | Accuracy: 0.440\nLoss at epoch 500.000: 0.099 | Accuracy: 0.450\nLoss at epoch 600.000: 0.087 | Accuracy: 0.450\nLoss at epoch 700.000: 0.079 | Accuracy: 0.470\nLoss at epoch 800.000: 0.072 | Accuracy: 0.470\nLoss at epoch 900.000: 0.067 | Accuracy: 0.470"
+  },
+  {
+    "objectID": "index.html#predictions",
+    "href": "index.html#predictions",
+    "title": "nanograd",
+    "section": "Predictions",
+    "text": "Predictions\n\ny_preds = [model([x])[0] for x in xs]\nplot_preds(xs, ys, [i.data for i in y_preds])\n\n\n\n\nNotice the strength of the connections has changed.\n\nmodel.draw_nn()"
+  },
+  {
+    "objectID": "neuron.html",
+    "href": "neuron.html",
+    "title": "Neural Networks building blocks",
+    "section": "",
+    "text": "source\n\nModule\n\n Module ()\n\nInitialize self. See help(type(self)) for accurate signature.\n\nsource\n\n\nNeuron\n\n Neuron (nin:int)\n\nA simple neuron which has trainable weights from each input and a bias term.\n\n\n\n\nType\nDetails\n\n\n\n\nnin\nint\nnumber of inputs\n\n\nReturns\nNone\n\n\n\n\n\nsource\n\n\nLayer\n\n Layer (nin:int, nout:int, label:str='')\n\nA layer of neurons. Each neuron has the same number of inputs. Number of neurons required depends on the number of outputs.\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nnin\nint\n\nnumber of inputs\n\n\nnout\nint\n\nnumber of outputs\n\n\nlabel\nstr\n\nlabel for the layer\n\n\nReturns\nNone\n\n\n\n\n\n\nLayer(3, 3).draw_layer()\n\n\n\n\n\nsource\n\n\nMLP\n\n MLP (nin:int, nouts:List[int])\n\nA milti layer-preceptron. Each layer is fully connected to the next layer.\n\n\n\n\nType\nDetails\n\n\n\n\nnin\nint\nnumber of inputs\n\n\nnouts\ntyping.List[int]\nlist of number of outputs for each layer\n\n\nReturns\nNone\n\n\n\n\n\nsource\n\n\nplot_preds\n\n plot_preds (xs:List[float], ys:List[float], y_preds:List[float])\n\nPlot the actual and predicted output.\n\n\n\n\nType\nDetails\n\n\n\n\nxs\ntyping.List[float]\nsingle input input variable\n\n\nys\ntyping.List[float]\nactual output\n\n\ny_preds\ntyping.List[float]\npredicted output"
+  }
+]
